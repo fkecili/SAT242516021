@@ -1,0 +1,54 @@
+﻿@page "/giderler"
+
+@using SAT242516021.Models
+@using MyDbModels
+@using Providers
+
+@inject IMyDbModel_Provider provider
+
+<h3>Gider Listesi</h3>
+
+@if (_model == null || _model.Items == null)
+{
+    <p>Yükleniyor...</p>
+}
+else
+{
+    <p>Toplam kayıt: @_model.Items.Count()</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Açıklama</th>
+                <th>Tutar</th>
+                <th>Tarih</th>
+                <th>Kategori</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _model.Items)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Aciklama</td>
+                    <td>@item.Tutar</td>
+                    <td>@item.Tarih.ToShortDateString()</td>
+                    <td>@item.KategoriAdi</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IMyDbModel<Gider>? _model;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = await provider.Execute(
+            new MyDbModel<Gider>(1, 10, "Id"),
+            "sp_GetGiderler"
+        );
+    }
+}

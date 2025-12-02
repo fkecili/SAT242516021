@@ -1,0 +1,52 @@
+﻿@page "/gelirler"
+
+@using SAT242516021.Models
+@using MyDbModels
+@using Providers
+
+@inject IMyDbModel_Provider provider
+
+<h3>Gelir Listesi</h3>
+
+@if (_model == null)
+{
+    <p>Yükleniyor...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Açıklama</th>
+                <th>Tutar</th>
+                <th>Tarih</th>
+                <th>Kategori</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _model.Items)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Aciklama</td>
+                    <td>@item.Tutar</td>
+                    <td>@item.Tarih.ToShortDateString()</td>
+                    <td>@item.KategoriAdi</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IMyDbModel<Gelir>? _model;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = await provider.Execute(
+            new MyDbModel<Gelir>(1, 10, "Id"),
+            "sp_GetGelirler"   // IVU'daki prosedür ismi
+        );
+    }
+}
